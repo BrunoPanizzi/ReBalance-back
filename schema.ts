@@ -4,13 +4,14 @@ import {
   real,
   text,
   uuid,
-  pgEnum,
   varchar,
   integer,
   serial,
 } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
+
+import { pgColorEnum, colorsSchema, type Colors } from './src/tailwindCssColors'
 
 // User
 export const user = pgTable('user', {
@@ -41,36 +42,18 @@ export const updateUserSchema = userSchema.omit({
   uid: true,
 })
 
-// tailwind css colors
-export const colorEnum = pgEnum('color', [
-  'orange',
-  'amber',
-  'yellow',
-  'lime',
-  'green',
-  'emerald',
-  'teal',
-  'cyan',
-  'sky',
-  'blue',
-  'indigo',
-  'violet',
-  'purple',
-  'fuchsia',
-  'pink',
-  'rose',
-])
-
-// wallets
+// Wallets
 export const wallet = pgTable('wallet', {
   id: uuid('id').defaultRandom().primaryKey().notNull(),
   title: text('title').notNull(),
   totalValue: real('total_value').default(0).notNull(),
   idealPercentage: real('ideal_percentage').default(0).notNull(),
   realPercentage: real('real_percentage').default(0).notNull(),
-  color: colorEnum('color'),
+  color: pgColorEnum('color').notNull(),
 
-  owner: uuid('owner').references(() => user.uid),
+  owner: uuid('owner')
+    .notNull()
+    .references(() => user.uid),
 })
 
 export const walletRelations = relations(wallet, ({ one, many }) => ({
@@ -80,6 +63,34 @@ export const walletRelations = relations(wallet, ({ one, many }) => ({
   }),
   stocks: many(stock),
 }))
+
+export type Wallet = InferModel<typeof wallet>
+export type NewWallet = InferModel<typeof wallet, 'insert'>
+export type UpdateWallet = Partial<Omit<Wallet, 'id' | 'owner'>>
+
+export const walletSchema = createSelectSchema(wallet, {
+  title: z.string().nonempty(),
+  totalValue: z.number().nonnegative(),
+  idealPercentage: z.number().min(0).max(1),
+  realPercentage: z.number().min(0).max(1),
+  color: colorsSchema,
+  id: z.string().uuid(),
+  owner: z.string().uuid().nonempty(),
+})
+
+export const newWalletSchema = createInsertSchema(wallet, {
+  title: z.string().nonempty(),
+  idealPercentage: z.number().min(0).max(1),
+  color: colorsSchema,
+  owner: z.string().uuid().nonempty(),
+})
+
+export const updateWalletSchema = walletSchema
+  .omit({
+    id: true,
+    owner: true,
+  })
+  .partial()
 
 // stocks
 export const stock = pgTable('stock', {
