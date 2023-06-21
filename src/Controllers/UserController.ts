@@ -1,24 +1,12 @@
 import { Request, Response } from 'express'
 
 import UserService from '../Services/UserService'
+import { encode } from '../utils/jwt'
 
 class UserController {
-  async index(_, res: Response) {
-    try {
-      const allUsers = await UserService.getAll()
-
-      return res.json(allUsers)
-    } catch (e) {
-      console.log('Something went wrong on user index.')
-      console.log(e)
-
-      return res.sendStatus(500)
-    }
-  }
-
   async show(req: Request, res: Response) {
     try {
-      const { uid } = req.params
+      const uid = req.userId
 
       const u = await UserService.getByUid(uid)
 
@@ -35,9 +23,20 @@ class UserController {
     try {
       const userData = req.body
 
-      const u = await UserService.create(userData)
+      const user = await UserService.create(userData)
 
-      return res.json(u)
+      const token = encode(user)
+
+      const data: {
+        user: {
+          uid: string
+          userName: string
+          email: string
+        }
+        token: string
+      } = { user, token }
+
+      return res.json(data)
     } catch (e) {
       console.log('Something went wrong on user store.')
       console.log(e)
@@ -49,7 +48,7 @@ class UserController {
   async update(req: Request, res: Response) {
     try {
       const userData = req.body
-      const { uid } = req.params
+      const uid = req.userId
 
       const newUser = await UserService.update(uid, userData)
 
@@ -64,7 +63,7 @@ class UserController {
 
   async delete(req: Request, res: Response) {
     try {
-      const { uid } = req.params
+      const uid = req.userId
 
       await UserService.deleteByUid(uid)
 

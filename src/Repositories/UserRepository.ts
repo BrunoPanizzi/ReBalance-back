@@ -10,10 +10,6 @@ const fields = {
 }
 
 class UserRepository {
-  getAll() {
-    return db.select(fields).from(user)
-  }
-
   getByUid(uid: string) {
     return db.select(fields).from(user).where(eq(user.uid, uid))
   }

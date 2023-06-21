@@ -4,7 +4,11 @@ import WalletService from '../Services/WalletService'
 class WalletController {
   async index(req: Request, res: Response) {
     try {
-      const { uid } = req.params
+      const uid = req.userId
+
+      if (!uid) {
+        return res.sendStatus(401) // should not happen because the middleware, but just for another layer
+      }
 
       const wallets = await WalletService.getAll(uid)
 
@@ -19,7 +23,12 @@ class WalletController {
 
   async show(req: Request, res: Response) {
     try {
-      const { uid, walletId } = req.params
+      const { walletId } = req.params
+      const uid = req.userId
+
+      if (!uid) {
+        return res.sendStatus(401)
+      }
 
       const wallet = await WalletService.getById(uid, walletId)
 
@@ -34,7 +43,12 @@ class WalletController {
 
   async store(req: Request, res: Response) {
     try {
-      const { uid } = req.params
+      const uid = req.userId
+
+      if (!uid) {
+        return res.sendStatus(401)
+      }
+
       const walletDetails = req.body
 
       const wallet = await WalletService.create(uid, walletDetails)
@@ -50,8 +64,15 @@ class WalletController {
 
   async update(req: Request, res: Response) {
     try {
-      const { uid, walletId } = req.params
+      const { walletId } = req.params
+
+      const uid = req.userId
+
       const walletData = req.body
+
+      if (!uid) {
+        return res.sendStatus(401)
+      }
 
       const newWallet = await WalletService.update(uid, walletId, walletData)
 
@@ -66,7 +87,13 @@ class WalletController {
 
   async delete(req: Request, res: Response) {
     try {
-      const { uid, walletId } = req.params
+      const { walletId } = req.params
+
+      const uid = req.userId
+
+      if (!uid) {
+        return res.sendStatus(401)
+      }
 
       await WalletService.deleteById(uid, walletId)
 

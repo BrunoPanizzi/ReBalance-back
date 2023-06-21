@@ -8,16 +8,12 @@ import {
   userSchema,
 } from '../../schema'
 
-import { encrypt } from '../hashing'
+import { encryptPassword } from '../hashing'
 
 import { emailSchema, uuidSchema } from '../utils/schemas'
 
 class UserService {
-  async getAll() {
-    return await UserRepository.getAll()
-  }
-
-  async getByUid(uid: string) {
+  async getByUid(uid: string | undefined) {
     const parsedUid = uuidSchema.parse(uid)
 
     const [user] = await UserRepository.getByUid(parsedUid)
@@ -46,7 +42,7 @@ class UserService {
       throw new Error('Email already in use')
     }
 
-    const encryptedPassword = await encrypt(parsedUser.password)
+    const encryptedPassword = await encryptPassword(parsedUser.password)
 
     const finalUser: NewUser = {
       ...parsedUser,
@@ -57,24 +53,18 @@ class UserService {
     return createdUser
   }
 
-  async update(uid: string, user: UpdateUser) {
+  async update(uid: string | undefined, user: UpdateUser) {
     const parsedUid = uuidSchema.parse(uid)
-    const parsedUser = updateUserSchema.parse(user)
+    const parsedUser = updateUserSchema.parse(user) // this does not have password, so a password change route might be needed
 
-    // don't overwrite the password please
-    const partialUser = {
-      email: parsedUser.email,
-      userName: parsedUser.userName,
-    }
-
-    const [newUser] = await UserRepository.updateUser(parsedUid, partialUser)
+    const [newUser] = await UserRepository.updateUser(parsedUid, parsedUser)
 
     const parsedUpdatedUser = userSchema.parse(newUser)
 
     return parsedUpdatedUser
   }
 
-  async deleteByUid(uid: string) {
+  async deleteByUid(uid: string | undefined) {
     const parsedUid = uuidSchema.parse(uid)
 
     return await UserRepository.delete(parsedUid)

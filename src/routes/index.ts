@@ -2,21 +2,29 @@ import { Router } from 'express'
 
 import UserController from '../Controllers/UserController'
 import WalletController from '../Controllers/WalletController'
+import AuthController from '../Controllers/AuthController'
+
+import AuthMiddleware from '../middlewares/AuthMiddleware'
 
 const router = Router()
 
-// USER
-router.get('/user', UserController.index)
-router.get('/user/:uid', UserController.show)
-router.post('/user', UserController.store)
-router.post('/user/:uid', UserController.update)
-router.delete('/user/:uid', UserController.delete)
+router.post('/auth', AuthController.authenticate)
 
-// WALLETS
-router.get('/user/:uid/wallet', WalletController.index)
-router.get('/user/:uid/wallet/:walletId', WalletController.show)
-router.post('/user/:uid/wallet', WalletController.store)
-router.post('/user/:uid/wallet/:walletId', WalletController.update)
-router.delete('/user/:uid/wallet/:walletId', WalletController.delete)
+// CREATE USER
+router.post('/user', UserController.store)
+
+router.use(AuthMiddleware)
+
+// LOGGED USER
+router.get('/user', UserController.show)
+router.post('/user/edit', UserController.update)
+router.delete('/user', UserController.delete)
+
+// WALLETS (logged only)
+router.get('/wallet', WalletController.index)
+router.get('/wallet/:walletId', WalletController.show)
+router.post('/wallet', WalletController.store)
+router.post('/wallet/:walletId', WalletController.update)
+router.delete('/wallet/:walletId', WalletController.delete)
 
 export default router
