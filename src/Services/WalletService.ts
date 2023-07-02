@@ -4,6 +4,7 @@ import {
   newWalletSchema,
   updateWalletSchema,
   walletSchema,
+  walletWithStocksSchema,
 } from '../../schema'
 import WalletRepository from '../Repositories/WalletRepository'
 
@@ -18,15 +19,21 @@ class WalletService {
     return wallets
   }
 
-  async getById(uid: string, walletId: string) {
+  async getById(uid: string, walletId: string, withStocks = false) {
     const parsedUid = uuidSchema.parse(uid)
     const parsedWalletId = uuidSchema.parse(walletId)
 
-    const wallet = await WalletRepository.getById(parsedUid, parsedWalletId)
+    const wallet = await WalletRepository.getById(
+      parsedUid,
+      parsedWalletId,
+      withStocks
+    )
 
-    const parsedWallet = walletSchema.parse(wallet)
+    if (withStocks) {
+      return walletWithStocksSchema.parse(wallet)
+    }
 
-    return parsedWallet
+    return walletSchema.parse(wallet)
   }
 
   async create(uid: string, wallet: NewWallet) {

@@ -12,9 +12,12 @@ class WalletRepository {
     })
   }
 
-  getById(uid: string, walletId: string) {
+  getById(uid: string, walletId: string, withStocks = false) {
     return db.query.wallet.findFirst({
       where: matchUidAndWid(uid, walletId),
+      with: {
+        stocks: withStocks ? true : undefined, // ok this looks bad, but drizzle api does not support false
+      },
     })
   }
 

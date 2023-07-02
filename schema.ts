@@ -107,3 +107,27 @@ export const stockRelations = relations(stock, ({ one }) => ({
     references: [wallet.id],
   }),
 }))
+
+export type Stock = InferModel<typeof stock>
+export type NewStock = InferModel<typeof stock, 'insert'>
+
+export const stockSchema = createSelectSchema(stock, {
+  id: z.number().int().positive(),
+  ticker: z.string().nonempty(),
+  amount: z.number().int().positive(),
+  walletId: z.string().uuid().nonempty(),
+})
+
+export const newStockSchema = createInsertSchema(stock, {
+  ticker: z.string().nonempty(),
+  amount: z.number().int().positive(),
+  walletId: z.string().uuid().nonempty(),
+})
+
+export type WalletWithStocks = Wallet & {
+  stocks: Stock[]
+}
+
+export const walletWithStocksSchema = walletSchema.extend({
+  stocks: z.array(stockSchema),
+})
