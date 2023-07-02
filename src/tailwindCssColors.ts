@@ -17,6 +17,7 @@ const colors = [
   'purple',
   'fuchsia',
   'pink',
+  'rose',
 ] as const
 
 export const colorsSchema = z.enum(colors)
