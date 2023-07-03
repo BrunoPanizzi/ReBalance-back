@@ -6,12 +6,13 @@ import {
   uuid,
   varchar,
   integer,
-  serial,
 } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
-import { pgColorEnum, colorsSchema, type Colors } from './src/tailwindCssColors'
+import { pgColorEnum, colorsSchema } from './src/tailwindCssColors'
+
+export { pgColorEnum }
 
 // User
 export const user = pgTable('user', {
@@ -23,6 +24,7 @@ export const user = pgTable('user', {
 
 export const userRelations = relations(user, ({ many }) => ({
   wallets: many(wallet),
+  stocks: many(stock),
 }))
 
 export type User = InferModel<typeof user>
@@ -94,12 +96,15 @@ export const updateWalletSchema = walletSchema
 
 // stocks
 export const stock = pgTable('stock', {
-  id: serial('id').primaryKey().notNull(),
+  id: uuid('id').defaultRandom().primaryKey().notNull(),
   ticker: varchar('ticker', { length: 10 }).notNull(),
   amount: integer('amount').default(0).notNull(),
 
   walletId: uuid('wallet_id')
     .references(() => wallet.id)
+    .notNull(),
+  owner: uuid('owner')
+    .references(() => user.uid)
     .notNull(),
 })
 
@@ -108,22 +113,28 @@ export const stockRelations = relations(stock, ({ one }) => ({
     fields: [stock.walletId],
     references: [wallet.id],
   }),
+  owner: one(user, {
+    fields: [stock.owner],
+    references: [user.uid],
+  }),
 }))
 
 export type Stock = InferModel<typeof stock>
 export type NewStock = InferModel<typeof stock, 'insert'>
 
 export const stockSchema = createSelectSchema(stock, {
-  id: z.number().int().positive(),
+  id: z.string().uuid().nonempty(),
   ticker: z.string().nonempty(),
   amount: z.number().int().positive(),
   walletId: z.string().uuid().nonempty(),
+  owner: z.string().uuid().nonempty(),
 })
 
 export const newStockSchema = createInsertSchema(stock, {
   ticker: z.string().nonempty(),
   amount: z.number().int().positive(),
   walletId: z.string().uuid().nonempty(),
+  owner: z.string().uuid().nonempty(),
 })
 
 export type WalletWithStocks = Wallet & {

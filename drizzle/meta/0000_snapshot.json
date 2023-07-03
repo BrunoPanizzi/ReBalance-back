@@ -1,9 +1,77 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "7c3ad2b9-b118-4e5b-a310-13d00ca17385",
+  "id": "65997c53-f6ab-4523-8349-cfbb36ce075f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "stock": {
+      "name": "stock",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "ticker": {
+          "name": "ticker",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "wallet_id": {
+          "name": "wallet_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner": {
+          "name": "owner",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "stock_wallet_id_wallet_id_fk": {
+          "name": "stock_wallet_id_wallet_id_fk",
+          "tableFrom": "stock",
+          "tableTo": "wallet",
+          "columnsFrom": [
+            "wallet_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "stock_owner_user_uid_fk": {
+          "name": "stock_owner_user_uid_fk",
+          "tableFrom": "stock",
+          "tableTo": "user",
+          "columnsFrom": [
+            "owner"
+          ],
+          "columnsTo": [
+            "uid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {}
+    },
     "user": {
       "name": "user",
       "schema": "",
@@ -15,8 +83,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "user-name": {
-          "name": "user-name",
+        "user_name": {
+          "name": "user_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -37,9 +105,100 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {}
+    },
+    "wallet": {
+      "name": "wallet",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_value": {
+          "name": "total_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "ideal_percentage": {
+          "name": "ideal_percentage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "real_percentage": {
+          "name": "real_percentage",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "color": {
+          "name": "color",
+          "type": "color",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner": {
+          "name": "owner",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "wallet_owner_user_uid_fk": {
+          "name": "wallet_owner_user_uid_fk",
+          "tableFrom": "wallet",
+          "tableTo": "user",
+          "columnsFrom": [
+            "owner"
+          ],
+          "columnsTo": [
+            "uid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "color": {
+      "name": "color",
+      "values": {
+        "orange": "orange",
+        "amber": "amber",
+        "yellow": "yellow",
+        "lime": "lime",
+        "green": "green",
+        "emerald": "emerald",
+        "teal": "teal",
+        "cyan": "cyan",
+        "sky": "sky",
+        "blue": "blue",
+        "indigo": "indigo",
+        "violet": "violet",
+        "purple": "purple",
+        "fuchsia": "fuchsia",
+        "pink": "pink",
+        "rose": "rose"
+      }
+    }
+  },
   "schemas": {},
   "_meta": {
     "schemas": {},

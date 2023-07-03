@@ -5,10 +5,18 @@ EXCEPTION
 END $$;
 
 CREATE TABLE IF NOT EXISTS "stock" (
-	"10" varchar NOT NULL,
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"ticker" varchar(10) NOT NULL,
 	"amount" integer DEFAULT 0 NOT NULL,
-	"wallet_id" uuid
+	"wallet_id" uuid NOT NULL,
+	"owner" uuid NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "user" (
+	"uid" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_name" text NOT NULL,
+	"email" text NOT NULL,
+	"password" text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "wallet" (
@@ -17,13 +25,18 @@ CREATE TABLE IF NOT EXISTS "wallet" (
 	"total_value" real DEFAULT 0 NOT NULL,
 	"ideal_percentage" real DEFAULT 0 NOT NULL,
 	"real_percentage" real DEFAULT 0 NOT NULL,
-	"color" color,
-	"owner" uuid
+	"color" color NOT NULL,
+	"owner" uuid NOT NULL
 );
 
-ALTER TABLE "user" RENAME COLUMN "user-name" TO "user_name";
 DO $$ BEGIN
  ALTER TABLE "stock" ADD CONSTRAINT "stock_wallet_id_wallet_id_fk" FOREIGN KEY ("wallet_id") REFERENCES "wallet"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+ ALTER TABLE "stock" ADD CONSTRAINT "stock_owner_user_uid_fk" FOREIGN KEY ("owner") REFERENCES "user"("uid") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

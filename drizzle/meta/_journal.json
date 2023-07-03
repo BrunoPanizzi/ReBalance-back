@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1686927762007,
-      "tag": "0000_gigantic_wilson_fisk",
-      "breakpoints": false
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1686930129357,
-      "tag": "0001_slimy_wallow",
-      "breakpoints": false
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1686930196920,
-      "tag": "0002_true_multiple_man",
-      "breakpoints": false
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1687017115232,
-      "tag": "0003_salty_shard",
+      "when": 1688395516868,
+      "tag": "0000_cheerful_machine_man",
       "breakpoints": false
     }
   ]

@@ -3,9 +3,9 @@ import { Router } from 'express'
 import UserController from '../Controllers/UserController'
 import WalletController from '../Controllers/WalletController'
 import AuthController from '../Controllers/AuthController'
+import StockController from '../Controllers/StockController'
 
 import AuthMiddleware from '../middlewares/AuthMiddleware'
-import StockController from '../Controllers/StockController'
 
 const router = Router()
 
