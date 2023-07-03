@@ -29,10 +29,13 @@ router.post('/wallet/:walletId', WalletController.update)
 router.delete('/wallet/:walletId', WalletController.delete)
 
 // STOCKS (logged only)
-router.get('/wallet/:walletId/stock', StockController.index)
-router.get('/wallet/:walletId/stock/:ticker', StockController.show)
-router.post('/wallet/:walletId/stock', StockController.store)
-router.post('/wallet/:walletId/stock/:ticker', StockController.update)
-router.delete('/wallet/:walletId/stock/:stockId', StockController.delete)
+router.get('/wallet/:walletId/stock', StockController.index) // show all the stocks for the specified wallet
+router.get('/wallet/:walletId/stock/:stockId', StockController.show) // show the specified stock for the specified wallet if exists
+router.post('/wallet/:walletId/stock', StockController.store) // create a new stock for the specified wallet
+router.post('/wallet/:walletId/stock/:stockId', StockController.update) // update the specified stock for the specified wallet
+router.delete('/wallet/:walletId/stock/:stockId', StockController.delete) // delete the specified stock for the specified wallet
+
+router.get('/stock', StockController.indexByUser) // show all the socks for the logged user
+router.get('/stock/ticker/:ticker', StockController.showByTicker) // show the specified stock for the logged user if exists, joined with the wallet it belongs to
 
 export default router

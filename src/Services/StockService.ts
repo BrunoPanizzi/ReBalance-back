@@ -1,35 +1,75 @@
 import { z } from 'zod'
 
-import { stockSchema, NewStock, newStockSchema } from '../../schema'
+import {
+  stockSchema,
+  NewStock,
+  newStockSchema,
+  walletSchema,
+} from '../../schema'
 
 import StockRepository from '../Repositories/StockRepository'
 
 const uuidSchema = z.string().uuid().nonempty()
 const amountSchema = z.number().int().positive()
 
+const stockWithWalletSchema = stockSchema.extend({
+  wallet: walletSchema,
+})
+
 class StockService {
-  async getAll(walletId: string) {
+  async getAll(uid: string, walletId: string) {
+    const parsedUid = uuidSchema.parse(uid)
     const parsedWalletId = uuidSchema.parse(walletId)
 
-    const stocks = await StockRepository.getAll(parsedWalletId)
+    const stocks = await StockRepository.getAll(parsedUid, parsedWalletId)
 
     return stocks
   }
 
-  async getByTicker(walletId: string, ticker: string) {
-    const parsedWalletId = uuidSchema.parse(walletId)
+  async getAllByUser(uid: string) {
+    const parsedUid = uuidSchema.parse(uid)
 
-    const stock = await StockRepository.getByTicker(parsedWalletId, ticker)
+    const stocks = await StockRepository.getAllByUser(parsedUid)
+
+    return stocks
+  }
+
+  async getByIdAndWallet(uid: string, walletId: string, stockId: string) {
+    const parsedUid = uuidSchema.parse(uid)
+    const parsedWalletId = uuidSchema.parse(walletId)
+    const parsedStockId = uuidSchema.parse(stockId)
+
+    const stock = await StockRepository.getById(
+      parsedUid,
+      parsedWalletId,
+      parsedStockId
+    )
 
     const parsedStock = stockSchema.parse(stock)
 
     return parsedStock
   }
 
-  async create(walletId: string, data: NewStock) {
-    const parseData = newStockSchema.parse({ ...data, walletId })
+  async getByTicker(uid: string, ticker: string) {
+    const parsedUid = uuidSchema.parse(uid)
 
-    const sameTicker = await StockRepository.getByTicker(
+    const stock = await StockRepository.getByTicker(parsedUid, ticker)
+
+    const parsedStock = stockWithWalletSchema.parse(stock)
+
+    return parsedStock
+  }
+
+  async create(uid: string, walletId: string, data: NewStock) {
+    const parsedUid = uuidSchema.parse(uid)
+    const parseData = newStockSchema.parse({
+      ...data,
+      walletId,
+      owner: parsedUid,
+    })
+
+    const sameTicker = await StockRepository.getByTickerAndWallet(
+      parsedUid,
       walletId,
       parseData.ticker
     )
@@ -38,6 +78,8 @@ class StockService {
       throw new Error('Stock with same ticker already exists')
     }
 
+    console.log('parsedData: ', parseData)
+
     const [stock] = await StockRepository.create(parseData)
 
     const parsedStock = stockSchema.parse(stock)
@@ -45,13 +87,21 @@ class StockService {
     return parsedStock
   }
 
-  async updateAmout(walletId: string, ticker: string, amount: number) {
+  async updateAmout(
+    uid: string,
+    walletId: string,
+    stockId: string,
+    amount: number
+  ) {
+    const parsedUid = uuidSchema.parse(uid)
     const parsedWalletId = uuidSchema.parse(walletId)
+    const parsedStockId = uuidSchema.parse(stockId)
     const parsedAmount = amountSchema.parse(amount)
 
     const [updatedStock] = await StockRepository.updateAmout(
+      parsedUid,
       parsedWalletId,
-      ticker,
+      parsedStockId,
       parsedAmount
     )
 
@@ -60,8 +110,8 @@ class StockService {
     return parsedStock
   }
 
-  async delete(walletId: string, stockId: number) {
-    await StockRepository.delete(walletId, stockId)
+  async delete(uid: string, walletId: string, stockId: string) {
+    await StockRepository.delete(uid, walletId, stockId)
   }
 }
 

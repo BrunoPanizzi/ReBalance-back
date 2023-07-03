@@ -6,8 +6,9 @@ class StockController {
   async index(req: Request, res: Response) {
     try {
       const { walletId } = req.params
+      const uid = req.userId!
 
-      const stocks = await StockService.getAll(walletId)
+      const stocks = await StockService.getAll(uid, walletId)
 
       return res.json(stocks)
     } catch (e) {
@@ -16,11 +17,38 @@ class StockController {
     }
   }
 
+  async indexByUser(req: Request, res: Response) {
+    try {
+      const uid = req.userId!
+      const stocks = await StockService.getAllByUser(uid)
+
+      return res.json(stocks)
+    } catch (e) {
+      console.log('Error on StockController.indexByUser', e)
+      return res.sendStatus(400)
+    }
+  }
+
   async show(req: Request, res: Response) {
     try {
-      const { walletId, ticker } = req.params
+      const { walletId, stockId } = req.params
+      const uid = req.userId!
 
-      const stock = await StockService.getByTicker(walletId, ticker)
+      const stock = await StockService.getByIdAndWallet(uid, walletId, stockId)
+
+      return res.json(stock)
+    } catch (e) {
+      console.log('Error on StockController.show', e)
+      return res.sendStatus(400)
+    }
+  }
+
+  async showByTicker(req: Request, res: Response) {
+    try {
+      const { ticker } = req.params
+      const uid = req.userId!
+
+      const stock = await StockService.getByTicker(uid, ticker)
 
       return res.json(stock)
     } catch (e) {
@@ -33,9 +61,14 @@ class StockController {
     try {
       const { walletId } = req.params
       const stockDetails = req.body
-      const uid = req.userId
+      const uid = req.userId!
 
-      const stock = await StockService.create(walletId, stockDetails)
+      console.log('CREATING')
+      console.log('wallet: ', walletId)
+      console.log('stockDetails: ', stockDetails)
+      console.log('uid: ', uid)
+
+      const stock = await StockService.create(uid, walletId, stockDetails)
 
       return res.json(stock)
     } catch (e) {
@@ -46,10 +79,16 @@ class StockController {
 
   async update(req: Request, res: Response) {
     try {
-      const { walletId, ticker } = req.params
+      const { walletId, stockId } = req.params
       const { amount } = req.body
+      const uid = req.userId!
 
-      const stock = await StockService.updateAmout(walletId, ticker, amount)
+      const stock = await StockService.updateAmout(
+        uid,
+        walletId,
+        stockId,
+        amount
+      )
 
       return res.json(stock)
     } catch (e) {
@@ -61,8 +100,9 @@ class StockController {
   async delete(req: Request, res: Response) {
     try {
       const { walletId, stockId } = req.params
+      const uid = req.userId!
 
-      await StockService.delete(walletId, Number(stockId))
+      await StockService.delete(uid, walletId, stockId)
 
       return res.sendStatus(200)
     } catch (e) {
