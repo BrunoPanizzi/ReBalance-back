@@ -98,7 +98,9 @@ export const stock = pgTable('stock', {
   ticker: varchar('ticker', { length: 10 }).notNull(),
   amount: integer('amount').default(0).notNull(),
 
-  walletId: uuid('wallet_id').references(() => wallet.id),
+  walletId: uuid('wallet_id')
+    .references(() => wallet.id)
+    .notNull(),
 })
 
 export const stockRelations = relations(stock, ({ one }) => ({

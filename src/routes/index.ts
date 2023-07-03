@@ -5,6 +5,7 @@ import WalletController from '../Controllers/WalletController'
 import AuthController from '../Controllers/AuthController'
 
 import AuthMiddleware from '../middlewares/AuthMiddleware'
+import StockController from '../Controllers/StockController'
 
 const router = Router()
 
@@ -26,5 +27,12 @@ router.get('/wallet/:walletId', WalletController.show)
 router.post('/wallet', WalletController.store)
 router.post('/wallet/:walletId', WalletController.update)
 router.delete('/wallet/:walletId', WalletController.delete)
+
+// STOCKS (logged only)
+router.get('/wallet/:walletId/stock', StockController.index)
+router.get('/wallet/:walletId/stock/:ticker', StockController.show)
+router.post('/wallet/:walletId/stock', StockController.store)
+router.post('/wallet/:walletId/stock/:ticker', StockController.update)
+router.delete('/wallet/:walletId/stock/:stockId', StockController.delete)
 
 export default router
