@@ -125,14 +125,14 @@ export type NewStock = InferModel<typeof stock, 'insert'>
 export const stockSchema = createSelectSchema(stock, {
   id: z.string().uuid().nonempty(),
   ticker: z.string().nonempty(),
-  amount: z.number().int().positive(),
+  amount: z.number().int().nonnegative(),
   walletId: z.string().uuid().nonempty(),
   owner: z.string().uuid().nonempty(),
 })
 
 export const newStockSchema = createInsertSchema(stock, {
   ticker: z.string().nonempty(),
-  amount: z.number().int().positive(),
+  amount: z.number().int().nonnegative(),
   walletId: z.string().uuid().nonempty(),
   owner: z.string().uuid().nonempty(),
 })
