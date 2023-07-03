@@ -24,7 +24,7 @@ class WalletController {
   async show(req: Request, res: Response) {
     try {
       const { walletId } = req.params
-      const withStocks = Boolean(req.query.withStocks)
+      const withStocks = String(req.query.withStocks)
       const uid = req.userId
 
       if (!uid) {

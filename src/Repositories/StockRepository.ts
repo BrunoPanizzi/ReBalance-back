@@ -55,7 +55,7 @@ class StockRepository {
     return db.insert(stock).values(data).returning()
   }
 
-  updateAmout(uid: string, walletId: string, ticker: string, amount: number) {
+  updateAmout(uid: string, walletId: string, stockId: string, amount: number) {
     return db
       .update(stock)
       .set({ amount })
@@ -63,7 +63,7 @@ class StockRepository {
         and(
           eq(stock.owner, uid),
           eq(stock.walletId, walletId),
-          eq(stock.ticker, ticker)
+          eq(stock.id, stockId)
         )
       )
       .returning()

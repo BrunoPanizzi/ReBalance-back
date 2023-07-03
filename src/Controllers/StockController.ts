@@ -58,6 +58,7 @@ class StockController {
   }
 
   async store(req: Request, res: Response) {
+    console.log('got shit here')
     try {
       const { walletId } = req.params
       const stockDetails = req.body

@@ -19,17 +19,19 @@ class WalletService {
     return wallets
   }
 
-  async getById(uid: string, walletId: string, withStocks = false) {
+  async getById(uid: string, walletId: string, withStocks: string = 'false') {
     const parsedUid = uuidSchema.parse(uid)
     const parsedWalletId = uuidSchema.parse(walletId)
+
+    const parsedWithStocks = withStocks === 'true'
 
     const wallet = await WalletRepository.getById(
       parsedUid,
       parsedWalletId,
-      withStocks
+      parsedWithStocks
     )
 
-    if (withStocks) {
+    if (parsedWithStocks) {
       return walletWithStocksSchema.parse(wallet)
     }
 
