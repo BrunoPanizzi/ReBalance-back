@@ -6,9 +6,12 @@ const matchUidAndWid = (uid: string, walletId: string) =>
   and(eq(wallet.owner, uid), eq(wallet.id, walletId))
 
 class WalletRepository {
-  getAll(uid: string) {
+  getAll(uid: string, withStocks = false) {
     return db.query.wallet.findMany({
       where: (wallet, { eq }) => eq(wallet.owner, uid),
+      with: {
+        stocks: withStocks ? true : undefined,
+      }
     })
   }
 

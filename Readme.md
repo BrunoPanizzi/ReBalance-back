@@ -65,7 +65,7 @@ Once you got the JWT token, include it in your requesti to access any of these e
 
 ### Wallets
 
-**`GET /wallet`**: Returns all the wallets for the currently logged user.
+**`GET /wallet`**: Returns all the wallets for the currently logged user. Accepts the query param `withStocks`, if true returns the wallets with all the stocks associated.
 
 **`GET /wallet/:walletId`**: Returns the specified wallet, if exists. Accepts the query param `withStocks`, if true returns the wallet with all the stocks associated.
 

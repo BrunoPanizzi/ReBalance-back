@@ -5,12 +5,13 @@ class WalletController {
   async index(req: Request, res: Response) {
     try {
       const uid = req.userId
+      const withStocks = String(req.query.withStocks)
 
       if (!uid) {
         return res.sendStatus(401) // should not happen because the middleware, but just for another layer
       }
 
-      const wallets = await WalletService.getAll(uid)
+      const wallets = await WalletService.getAll(uid, withStocks)
 
       return res.json(wallets)
     } catch (e) {

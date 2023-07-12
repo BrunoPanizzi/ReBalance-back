@@ -11,10 +11,12 @@ import WalletRepository from '../Repositories/WalletRepository'
 import { uuidSchema } from '../utils/schemas'
 
 class WalletService {
-  async getAll(uid: string) {
+  async getAll(uid: string, withStocks: string = 'false') {
     const parsedUid = uuidSchema.parse(uid)
 
-    const wallets = await WalletRepository.getAll(parsedUid)
+    const parsedWithStocks = withStocks === 'true'
+
+    const wallets = await WalletRepository.getAll(parsedUid, parsedWithStocks)
 
     return wallets
   }
