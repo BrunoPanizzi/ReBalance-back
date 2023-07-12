@@ -137,6 +137,15 @@ export const newStockSchema = createInsertSchema(stock, {
   owner: z.string().uuid().nonempty(),
 })
 
+export const updateStocksSchema = z.array(
+  z.object({
+    id: z.string().uuid().nonempty(),
+    amount: z.number().int().nonnegative(),
+  })
+)
+
+export type UpdateStocks = z.infer<typeof updateStocksSchema>
+
 export type WalletWithStocks = Wallet & {
   stocks: Stock[]
 }

@@ -98,6 +98,20 @@ class StockController {
     }
   }
 
+  async updateMany(req: Request, res: Response) {
+    try {
+      const { stocks } = req.body
+      const uid = req.userId!
+
+      const updatedStocks = await StockService.updateMany(uid, stocks)
+
+      return res.json(updatedStocks)
+    } catch (e) {
+      console.log('Error on StockController.updateMany', e)
+      return res.sendStatus(400)
+    }
+  }
+
   async delete(req: Request, res: Response) {
     try {
       const { walletId, stockId } = req.params

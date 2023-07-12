@@ -5,6 +5,8 @@ import {
   NewStock,
   newStockSchema,
   walletSchema,
+  UpdateStocks,
+  updateStocksSchema,
 } from '../../schema'
 
 import StockRepository from '../Repositories/StockRepository'
@@ -108,6 +110,17 @@ class StockService {
     const parsedStock = stockSchema.parse(updatedStock)
 
     return parsedStock
+  }
+
+  async updateMany(uid: string, data: UpdateStocks) {
+    const parsedUid = uuidSchema.parse(uid)
+    const parsedData = updateStocksSchema.parse(data)
+
+    const newStocks = await StockRepository.updateMany(parsedUid, parsedData)
+
+    const parsedNewStocks = newStocks.map((stock) => stockSchema.parse(stock))
+
+    return parsedNewStocks
   }
 
   async delete(uid: string, walletId: string, stockId: string) {

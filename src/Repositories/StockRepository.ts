@@ -1,6 +1,6 @@
-import { and, eq } from 'drizzle-orm'
+import { SQL, and, eq, sql } from 'drizzle-orm'
 
-import { NewStock, stock } from '../../schema'
+import { NewStock, UpdateStocks, stock } from '../../schema'
 
 import db from '../db'
 
@@ -67,6 +67,39 @@ class StockRepository {
         )
       )
       .returning()
+  }
+
+  // TODO: refactor this if drizzle get an update
+  updateMany(uid: string, data: UpdateStocks) {
+    const sqlChunks: SQL[] = []
+    const idsChunks: SQL[] = []
+
+    data.forEach((s) => {
+      idsChunks.push(sql`${s.id}`)
+    })
+
+    const finalIds = sql.join(idsChunks, sql.raw(','))
+
+    sqlChunks.push(sql`update ${stock} set "amount"`) // this might be bad, but it does not accpet ${stock.amount}
+
+    sqlChunks.push(sql`= case`)
+
+    data.forEach((s) => {
+      sqlChunks.push(
+        sql`when "id" = ${s.id} and "owner" = ${uid} then ${s.amount}`
+      )
+    })
+
+    sqlChunks.push(sql`else "amount"`)
+    sqlChunks.push(sql`end`)
+
+    sqlChunks.push(sql`where "id" in (${finalIds})`)
+
+    sqlChunks.push(sql`returning *, wallet_id as "walletId"`) // this is where I miss the ORM
+
+    const finalSql = sql.join(sqlChunks, sql.raw(' '))
+
+    return db.execute(finalSql)
   }
 
   delete(uid: string, walletId: string, stockId: string) {

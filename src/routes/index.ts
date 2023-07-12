@@ -37,5 +37,6 @@ router.delete('/wallet/:walletId/stock/:stockId', StockController.delete) // del
 
 router.get('/stock', StockController.indexByUser) // show all the socks for the logged user
 router.get('/stock/ticker/:ticker', StockController.showByTicker) // show the specified stock for the logged user if exists, joined with the wallet it belongs to
+router.post('/stock', StockController.updateMany) // update multiple stocks, all wallets
 
 export default router
