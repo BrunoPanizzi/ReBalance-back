@@ -11,7 +11,7 @@ class WalletRepository {
       where: (wallet, { eq }) => eq(wallet.owner, uid),
       with: {
         stocks: withStocks ? true : undefined,
-      }
+      },
     })
   }
 

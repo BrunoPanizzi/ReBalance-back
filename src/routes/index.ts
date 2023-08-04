@@ -6,6 +6,7 @@ import AuthController from '../Controllers/AuthController'
 import StockController from '../Controllers/StockController'
 
 import AuthMiddleware from '../middlewares/AuthMiddleware'
+import ShoppingController from '../Controllers/ShoppingController'
 
 const router = Router()
 
@@ -38,5 +39,8 @@ router.delete('/wallet/:walletId/stock/:stockId', StockController.delete) // del
 router.get('/stock', StockController.indexByUser) // show all the socks for the logged user
 router.get('/stock/ticker/:ticker', StockController.showByTicker) // show the specified stock for the logged user if exists, joined with the wallet it belongs to
 router.post('/stock', StockController.updateMany) // update multiple stocks, all wallets
+
+router.post('/shopping', ShoppingController.all) // returns the ideal purchases for each wallet
+router.post('/shopping/:walletId') // returns the ideal purchases for the stocks in the specified wallet
 
 export default router
