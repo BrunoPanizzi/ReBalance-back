@@ -6,6 +6,7 @@ import {
   uuid,
   varchar,
   integer,
+  pgEnum,
 } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
@@ -152,4 +153,45 @@ export type WalletWithStocks = Wallet & {
 
 export const walletWithStocksSchema = walletSchema.extend({
   stocks: z.array(stockSchema),
+})
+
+// feedbacks
+
+export const feedbackType = pgEnum('feedback_type', [
+  'Elogios',
+  'Sugestão',
+  'Problemas',
+  'Outros',
+])
+export const feedbackTypeSchema = z.enum([
+  'Elogios',
+  'Sugestão',
+  'Problemas',
+  'Outros',
+])
+
+export const feedback = pgTable('feedback', {
+  id: uuid('id').defaultRandom().primaryKey().notNull(),
+  type: feedbackType('type').notNull().default('Outros'),
+  message: text('message').notNull(),
+  userName: varchar('user_name', { length: 100 }),
+  email: varchar('email', { length: 200 }),
+})
+
+export type Feedback = InferModel<typeof feedback>
+export type NewFeedback = InferModel<typeof feedback, 'insert'>
+
+export const feedbackSchema = createSelectSchema(feedback, {
+  id: z.string().uuid().nonempty(),
+  type: feedbackTypeSchema,
+  message: z.string().nonempty(),
+  userName: z.string().nullable(),
+  email: z.string().email().nullable(),
+})
+
+export const newFeedbackSchema = createInsertSchema(feedback, {
+  type: feedbackTypeSchema,
+  message: z.string().nonempty(),
+  userName: z.string().nullable(),
+  email: z.string().email().nullable(),
 })

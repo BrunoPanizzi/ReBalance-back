@@ -7,8 +7,13 @@ import StockController from '../Controllers/StockController'
 
 import AuthMiddleware from '../middlewares/AuthMiddleware'
 import ShoppingController from '../Controllers/ShoppingController'
+import FeedbackController from '../Controllers/FeedbackController'
 
 const router = Router()
+
+// Feedbacks
+router.get('/feedback', FeedbackController.index)
+router.post('/feedback', FeedbackController.store)
 
 router.post('/auth', AuthController.authenticate)
 
